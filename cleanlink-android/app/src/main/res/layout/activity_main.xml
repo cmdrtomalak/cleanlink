@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clean Link"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/inputUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Paste URL here or share into app"
+            android:inputType="textUri" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+            <Button
+                android:id="@+id/btnClean"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Clean"
+                android:backgroundTint="#1976D2"
+                android:layout_marginEnd="2dp" />
+            <Button
+                android:id="@+id/btnReset"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Reset"
+                android:backgroundTint="#1976D2"
+                android:layout_marginStart="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+            <Button
+                android:id="@+id/btnOpen"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Open"
+                android:backgroundTint="#1976D2"
+                android:layout_marginEnd="2dp" />
+            <Button
+                android:id="@+id/btnShare"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Share"
+                android:backgroundTint="#1976D2"
+                android:layout_marginStart="2dp" />
+        </LinearLayout>
+
+        <!-- Output Rows -->
+        <LinearLayout
+            android:id="@+id/rowTwitter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="16dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Twitter (clean)" android:textStyle="bold" />
+            <TextView android:id="@+id/txtTwitter" android:layout_width="match_parent" android:layout_height="wrap_content" android:textIsSelectable="true" android:padding="6dp" android:background="#EEEEEE" android:textColor="#FFA64D" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowVx"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="12dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="VxTwitter" android:textStyle="bold" />
+            <TextView android:id="@+id/txtVx" android:layout_width="match_parent" android:layout_height="wrap_content" android:textIsSelectable="true" android:padding="6dp" android:background="#EEEEEE" android:textColor="#FFA64D" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowFx"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="12dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FxTwitter" android:textStyle="bold" />
+            <TextView android:id="@+id/txtFx" android:layout_width="match_parent" android:layout_height="wrap_content" android:textIsSelectable="true" android:padding="6dp" android:background="#EEEEEE" android:textColor="#FFA64D" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rowGeneric"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="12dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Clean Link" android:textStyle="bold" />
+            <TextView android:id="@+id/txtGeneric" android:layout_width="match_parent" android:layout_height="wrap_content" android:textIsSelectable="true" android:padding="6dp" android:background="#EEEEEE" android:textColor="#FFA64D" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tap any output to copy" android:layout_marginTop="24dp"/>
+    </LinearLayout>
+</ScrollView>

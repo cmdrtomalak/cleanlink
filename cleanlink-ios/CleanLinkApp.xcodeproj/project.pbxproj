@@ -1,0 +1,50 @@
+// !$*UTF8*$!
+{
+archiveVersion = 1;
+classes = {};
+objectVersion = 60;
+objects = {
+/* Begin PBXBuildFile section */
+APP_LINKCLEANER_SWIFT = {isa = PBXBuildFile; fileRef = FILE_LINKCLEANER_SWIFT; };
+APP_APPDELEGATE_SWIFT = {isa = PBXBuildFile; fileRef = FILE_APPDELEGATE_SWIFT; };
+APP_MAINVC_SWIFT = {isa = PBXBuildFile; fileRef = FILE_MAINVC_SWIFT; };
+EXT_LINKCLEANER_SWIFT = {isa = PBXBuildFile; fileRef = FILE_LINKCLEANER_SWIFT; };
+EXT_SHAREVC_SWIFT = {isa = PBXBuildFile; fileRef = FILE_SHAREVC_SWIFT; };
+/* End PBXBuildFile section */
+/* Begin PBXFileReference section */
+FILE_LINKCLEANER_SWIFT = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkCleaner.swift; sourceTree = "<group>"; };
+FILE_APPDELEGATE_SWIFT = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+FILE_MAINVC_SWIFT = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+FILE_INFO_PLIST = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+FILE_EXT_INFO_PLIST = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+FILE_SHAREVC_SWIFT = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkShareViewController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+/* Begin PBXGroup section */
+GROUP_MAIN = {isa = PBXGroup; children = (GROUP_APP, GROUP_EXT); sourceTree = "<group>"; };
+GROUP_APP = {isa = PBXGroup; children = (FILE_APPDELEGATE_SWIFT, FILE_MAINVC_SWIFT, FILE_LINKCLEANER_SWIFT, FILE_INFO_PLIST); path = CleanLink; sourceTree = "<group>"; };
+GROUP_EXT = {isa = PBXGroup; children = (FILE_SHAREVC_SWIFT, FILE_LINKCLEANER_SWIFT, FILE_EXT_INFO_PLIST); path = CleanLinkShareExtension; sourceTree = "<group>"; };
+/* End PBXGroup section */
+/* Begin PBXNativeTarget section */
+TARGET_APP = {isa = PBXNativeTarget; buildConfigurationList = CONFIGLIST_APP; name = CleanLink; productName = CleanLink; productType = "com.apple.product-type.application"; buildPhases = (PHASE_SOURCES_APP); dependencies = (); };
+TARGET_EXT = {isa = PBXNativeTarget; buildConfigurationList = CONFIGLIST_EXT; name = CleanLinkShareExtension; productName = CleanLinkShareExtension; productType = "com.apple.product-type.app-extension"; buildPhases = (PHASE_SOURCES_EXT); dependencies = (); };
+/* End PBXNativeTarget section */
+/* Begin PBXSourcesBuildPhase section */
+PHASE_SOURCES_APP = {isa = PBXSourcesBuildPhase; files = (APP_LINKCLEANER_SWIFT, APP_APPDELEGATE_SWIFT, APP_MAINVC_SWIFT); };
+PHASE_SOURCES_EXT = {isa = PBXSourcesBuildPhase; files = (EXT_LINKCLEANER_SWIFT, EXT_SHAREVC_SWIFT); };
+/* End PBXSourcesBuildPhase section */
+/* Begin XCBuildConfiguration section */
+CONF_APP_DEBUG = {isa = XCBuildConfiguration; buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 12.0; PRODUCT_BUNDLE_IDENTIFIER = com.example.cleanlink; SWIFT_VERSION = 5.0; }; name = Debug; };
+CONF_APP_RELEASE = {isa = XCBuildConfiguration; buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 12.0; PRODUCT_BUNDLE_IDENTIFIER = com.example.cleanlink; SWIFT_VERSION = 5.0; }; name = Release; };
+CONF_EXT_DEBUG = {isa = XCBuildConfiguration; buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 12.0; PRODUCT_BUNDLE_IDENTIFIER = com.example.cleanlink.share; SWIFT_VERSION = 5.0; }; name = Debug; };
+CONF_EXT_RELEASE = {isa = XCBuildConfiguration; buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 12.0; PRODUCT_BUNDLE_IDENTIFIER = com.example.cleanlink.share; SWIFT_VERSION = 5.0; }; name = Release; };
+/* End XCBuildConfiguration section */
+/* Begin XCConfigurationList section */
+CONFIGLIST_APP = {isa = XCConfigurationList; buildConfigurations = (CONF_APP_DEBUG, CONF_APP_RELEASE); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+CONFIGLIST_EXT = {isa = XCConfigurationList; buildConfigurations = (CONF_EXT_DEBUG, CONF_EXT_RELEASE); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+/* End XCConfigurationList section */
+/* Begin PBXProject section */
+PROJECT_MAIN = {isa = PBXProject; attributes = { LastUpgradeCheck = 1500; }; buildConfigurationList = CONFIGLIST_APP; compatibilityVersion = "Xcode 15.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en); mainGroup = GROUP_MAIN; productRefGroup = GROUP_MAIN; projectRoot = ""; targets = (TARGET_APP, TARGET_EXT); };
+/* End PBXProject section */
+};
+rootObject = PROJECT_MAIN;
+}

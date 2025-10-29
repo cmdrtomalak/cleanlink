@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Social Link Cleaner</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+ body{font-family:system-ui,Arial,sans-serif;margin:2rem;max-width:800px;}
+ input[type=url]{width:100%;padding:.6rem;font-size:1rem;}
+ button{padding:.6rem 1rem;font-size:1rem;margin-top:.5rem;}
+ .outputs{margin-top:1.5rem;}
+ .out{margin:.75rem 0;padding:.5rem .75rem;background:#f5f5f5;border-radius:6px;display:flex;justify-content:space-between;align-items:center;gap:.75rem;}
+ code{word-break:break-all;font-size:.9rem;}
+ .copy-btn{cursor:pointer;background:#0069d9;color:#fff;border:none;padding:.4rem .7rem;border-radius:4px;}
+ .copy-btn:active{transform:scale(.96);} 
+ footer{margin-top:2rem;font-size:.75rem;color:#666;}
+ #toast{position:fixed;left:50%;bottom:1.25rem;transform:translateX(-50%);background:#222;color:#fff;padding:.6rem .9rem;border-radius:6px;font-size:.85rem;box-shadow:0 2px 6px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .25s;}
+</style>
+</head>
+<body>
+<h1>Social Link Cleaner</h1>
+<p>Paste a Tweet / Instagram Reel / YouTube / Threads link (with tracking). Tweets: clean + alt frontends. Instagram / YouTube / Threads: query params removed.</p>
+<div style="display:flex;flex-direction:column;gap:.5rem;max-width:100%;">
+  <input id="urlInput" type="url" placeholder="Paste URL (tweet/reel/video/article) here" />
+  <div style="display:flex;gap:.5rem;">
+    <button id="cleanBtn">Clean Link</button>
+    <button id="clearBtn" type="button" title="Clear input">Clear</button>
+  </div>
+</div>
+<div class="outputs" id="outputs" hidden>
+  <div class="out" id="twitterBlock" hidden><strong>Twitter (clean)</strong><code id="twitterClean"></code><button class="copy-btn" data-copy="twitterClean">Copy</button></div>
+  <div class="out" id="vxBlock" hidden><strong>VxTwitter</strong><code id="vxClean"></code><button class="copy-btn" data-copy="vxClean">Copy</button></div>
+  <div class="out" id="fxBlock" hidden><strong>FxTwitter</strong><code id="fxClean"></code><button class="copy-btn" data-copy="fxClean">Copy</button></div>
+  <div class="out" id="genericBlock" hidden><strong>Clean Link</strong><code id="genericClean"></code><button class="copy-btn" data-copy="genericClean">Copy</button></div>
+</div>
+<footer>Client-side only. No data sent anywhere. <span id="dt"></span></footer>
+<div id="toast"></div>
+<script>
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.opacity='1';
+  clearTimeout(t._hideTimer);t._hideTimer=setTimeout(()=>{t.style.opacity='0';},1800);
+}
+function extractStatusPath(urlStr){
+  try{
+    if(!urlStr || !/https?:\/\//i.test(urlStr)) return null;
+    const u=new URL(urlStr.trim());
+    // Accept hosts
+    if(!/(twitter\.com|x\.com)$/i.test(u.hostname.replace(/^m\.|^mobile\./,''))) return null;
+    // Remove mobile prefixes
+    const hostBase = u.hostname.replace(/^m\.|^mobile\./,'').toLowerCase();
+    const parts = u.pathname.split('/').filter(Boolean);
+    // Find 'status' and following numeric ID
+    const statusIdx = parts.findIndex(p=>p.toLowerCase()==='status');
+    if(statusIdx === -1 || statusIdx===parts.length-1) return null;
+    const id = parts[statusIdx+1].match(/\d+/);
+    if(!id) return null;
+    return `/${parts[0]}/status/${id[0]}`; // parts[0] should be username
+  }catch(e){return null;}
+}
+function buildLinks(basePath){
+  return {
+    twitter:`https://x.com${basePath}`,
+    vx:`https://vxtwitter.com${basePath}`,
+    fx:`https://fxtwitter.com${basePath}`
+  };
+}
+function clean(){
+  const raw=document.getElementById('urlInput').value.trim();
+  const outputs=document.getElementById('outputs');
+  const twitterBlock=document.getElementById('twitterBlock');
+  const vxBlock=document.getElementById('vxBlock');
+  const fxBlock=document.getElementById('fxBlock');
+  const genericBlock=document.getElementById('genericBlock');
+  twitterBlock.hidden=vxBlock.hidden=fxBlock.hidden=genericBlock.hidden=true;
+  outputs.hidden=true;
+  // Clear previous text contents to avoid stale values appearing later
+  document.getElementById('twitterClean').textContent='';
+  document.getElementById('vxClean').textContent='';
+  document.getElementById('fxClean').textContent='';
+  document.getElementById('genericClean').textContent='';
+  if(!raw){return;}
+  let u;
+  try{u=new URL(raw);}catch(e){
+    alert('Invalid URL');return;
+  }
+  const host=u.hostname.toLowerCase().replace(/^www\./,'');
+  // Twitter/X
+  if(/^(x\.com|twitter\.com)$/.test(host)){
+    const basePath=extractStatusPath(raw);
+    if(!basePath){alert('Could not parse a valid Twitter/X status URL.');return;}
+    const links=buildLinks(basePath);
+    document.getElementById('twitterClean').textContent=links.twitter;
+    document.getElementById('vxClean').textContent=links.vx;
+    document.getElementById('fxClean').textContent=links.fx;
+    twitterBlock.hidden=vxBlock.hidden=fxBlock.hidden=false;
+    outputs.hidden=false;
+    return;
+  }
+  // Instagram: strip query entirely
+  if(/^instagram\.com$/.test(host)){
+    const cleanLink=`${u.origin}${u.pathname}`.replace(/\/$/,'');
+    document.getElementById('genericClean').textContent=cleanLink;
+    genericBlock.hidden=false;outputs.hidden=false;return;
+  }
+  // YouTube (youtube.com, youtu.be): preserve v (video id) and valid t; drop other params
+  if(/^(youtube\.com|youtu\.be)$/.test(host)){
+    const vVal = u.searchParams.get('v');
+    const tRaw = u.searchParams.get('t');
+    const tVal = tRaw && /^[0-9]+([smh])?$/.test(tRaw) ? tRaw : null;
+    const params = [];
+    if(vVal) params.push('v='+vVal);
+    if(tVal) params.push('t='+tVal);
+    const suffix = params.length ? '?' + params.join('&') : '';
+    const cleanLink=`${u.origin}${u.pathname}${suffix}`;
+    document.getElementById('genericClean').textContent=cleanLink;
+    genericBlock.hidden=false;outputs.hidden=false;return;
+  }
+  // Threads (threads.net or threads.com): strip query
+  if(/^threads\.(net|com)$/.test(host)){
+    const cleanLink=`${u.origin}${u.pathname}`.replace(/\/$/,'');
+    document.getElementById('genericClean').textContent=cleanLink;
+    genericBlock.hidden=false;outputs.hidden=false;return;
+  }
+  // Generic fallback: strip all query params for unknown hosts
+  const cleanLink=`${u.origin}${u.pathname}`.replace(/\/$/,'');
+  document.getElementById('genericClean').textContent=cleanLink;
+  genericBlock.hidden=false;outputs.hidden=false;return;
+}
+// Copy buttons
+addEventListener('click',e=>{
+  const target=e.target;
+  if(target.matches('.copy-btn')){
+    const id=target.getAttribute('data-copy');
+    const text=document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(()=>{
+      showToast('Copied');
+    });
+  }
+});
+// Enter key triggers
+document.getElementById('urlInput').addEventListener('keydown',e=>{if(e.key==='Enter') clean();});
+// Button
+document.getElementById('cleanBtn').addEventListener('click',clean);
+// Clear button
+document.getElementById('clearBtn').addEventListener('click',()=>{
+  document.getElementById('urlInput').value='';
+  document.getElementById('outputs').hidden=true;
+  document.getElementById('twitterClean').textContent='';
+  document.getElementById('vxClean').textContent='';
+  document.getElementById('fxClean').textContent='';
+  document.getElementById('genericClean').textContent='';
+  document.getElementById('twitterBlock').hidden=true;
+  document.getElementById('vxBlock').hidden=true;
+  document.getElementById('fxBlock').hidden=true;
+  document.getElementById('genericBlock').hidden=true;
+  showToast('Cleared');
+  history.replaceState(null,'',location.pathname); // remove query param
+});
+// Datetime footer
+document.getElementById('dt').textContent=new Date().toISOString();
+// Auto-run if ?u= param present (with aggressive copy fallbacks)
+(function(){
+  const params=new URLSearchParams(location.search);
+  const u=params.get('u'); // can be any supported host
+  if(!u) return;
+  const input=document.getElementById('urlInput');
+  input.value=u;
+  clean();
+  // Decide which element will hold primary result for auto-copy
+let linkEl=document.getElementById('twitterClean');
+if(!linkEl.textContent){ // maybe not twitter, run clean first then pick generic
+  clean();
+  linkEl=document.getElementById('twitterClean').textContent?document.getElementById('twitterClean'):document.getElementById('genericClean');
+}
+  let copied=false;
+
+  function markCopied(){
+    copied=true;
+    showToast('Copied');
+  }
+  function legacyCopy(){
+    // Fallback using a hidden textarea and execCommand
+    const ta=document.createElement('textarea');
+    ta.value=linkEl.textContent;
+    ta.style.position='fixed';ta.style.top='-1000px';
+    document.body.appendChild(ta);ta.select();
+    try{ if(document.execCommand('copy')) markCopied(); }catch(e){}
+    ta.remove();
+  }
+  function attemptClipboard(){
+    if(copied) return;
+    if(!document.hasFocus()) return; // wait until tab focused
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(linkEl.textContent).then(()=>{markCopied();}).catch(()=>{legacyCopy();});
+    } else {legacyCopy();}
+  }
+  // Initial small delays to allow focus granting on mobile PWA / tab switch
+  setTimeout(attemptClipboard,200);
+  setTimeout(attemptClipboard,650);
+  setTimeout(attemptClipboard,1400);
+  // Re-attempt upon focus/visibility (first user gesture implicitly happens)
+  addEventListener('visibilitychange',attemptClipboard,{once:true});
+  addEventListener('focus',attemptClipboard,{once:true});
+  // Pointer gesture one-shot
+  addEventListener('pointerdown',attemptClipboard,{once:true,capture:true});
+  // Highlight for manual long-press if still not copied after 2s
+  setTimeout(()=>{if(!copied){
+    const range=document.createRange();range.selectNodeContents(linkEl);
+    const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+    console.log('Auto copy blocked; long-press to copy.');
+  }},2000);
+})();
+</script>
+</body>
+</html>
