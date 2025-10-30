@@ -1,4 +1,3 @@
-// Shared link cleaning logic ported from Android LinkCleaner.kt
 import Foundation
 
 struct CleanResult {
@@ -19,7 +18,6 @@ enum LinkCleaner {
         guard let urlStr = extractUrlString(trimmed), let url = URL(string: urlStr) else { return nil }
         guard let host = url.host?.lowercased().replacingOccurrences(of: "www.", with: "") else { return nil }
 
-        // Twitter/X logic
         if host == "x.com" || host == "twitter.com" || host.hasSuffix(".twitter.com") {
             if let statusPath = extractStatusPath(url.absoluteString) {
                 let twitter = "https://x.com" + statusPath
@@ -28,12 +26,10 @@ enum LinkCleaner {
                 return CleanResult(original: trimmed, twitter: twitter, vxTwitter: vx, fxTwitter: fx, generic: twitter)
             } else { return nil }
         }
-        // Instagram: strip query
         if host == "instagram.com" {
             let clean = (url.scheme ?? "https") + "://" + host + url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
             return CleanResult(original: trimmed, twitter: nil, vxTwitter: nil, fxTwitter: nil, generic: clean)
         }
-        // YouTube rules
         if host == "youtube.com" || host == "youtu.be" {
             var vVal: String? = nil
             if host == "youtu.be" {
@@ -63,18 +59,15 @@ enum LinkCleaner {
             let clean = (url.scheme ?? "https") + "://" + (url.host ?? host) + pathNoQuery + suffix
             return CleanResult(original: trimmed, twitter: nil, vxTwitter: nil, fxTwitter: nil, generic: clean)
         }
-        // Threads: strip query
         if host == "threads.net" || host == "threads.com" {
             let clean = (url.scheme ?? "https") + "://" + host + url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
             return CleanResult(original: trimmed, twitter: nil, vxTwitter: nil, fxTwitter: nil, generic: clean)
         }
-        // Generic fallback (remove query)
         let clean = (url.scheme ?? "https") + "://" + host + url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         return CleanResult(original: trimmed, twitter: nil, vxTwitter: nil, fxTwitter: nil, generic: clean)
     }
 
     private static func extractUrlString(_ input: String) -> String? {
-        // Simple regex for first http/https URL
         let pattern = "https?://[A-Za-z0-9./?=&_%:-]+"
         if let range = input.range(of: pattern, options: .regularExpression) {
             return String(input[range])
